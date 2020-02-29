@@ -29,11 +29,17 @@ import GameView from './screens/gameview';
 import * as config from './config'
 import * as firebase from 'firebase';
 import '@firebase/firestore';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from 'react-navigation-stack';
 
 
 
 
 
+const Stack = createStackNavigator({
+  Sports: Sports,
+  Events: Events
+});
 const dbh = firebase.firestore();
 
 const theme = {
@@ -46,19 +52,13 @@ const theme = {
 };
 
 
-const ContentTitle = ({ title, style }) => (
-  <Appbar.Content
-    title={<Text style={style}> {title} </Text>}
-    style={{ alignItems: 'center' }}
-  />
-);
 
 export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       search: '',
-      title: 'NFL WEEK 1',
+      title: 'Sports',
       categories: [{
         active: true,
         name: 'Events'
@@ -78,7 +78,8 @@ export default class App extends React.Component {
       active: false,
       name: '🌎All'
     }],
-    sports: []
+    sports: [],
+    subTitle: 'Events'
 
 
 
@@ -87,7 +88,6 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log('running');
     const sports = []
     dbh.collection("sports").get().then(res => {
       res.forEach(doc => {
@@ -103,37 +103,42 @@ export default class App extends React.Component {
   };
 
   render() {
-    console.log('rendeer', this.state.sports)
     const { search, categories, subCategories } = this.state
     return (
-      <PaperProvider theme={theme}>
-        <Appbar style={{elevation: 24, height:90, alignItems:'center'}}>
-          <Appbar.Content
-            title={this.state.title}
-            subtitle={<React.Fragment>
-                <Text style={{color:'white', fontFamily:'System'}}> 🏈 Games</Text>
-                <Text> 🔴 Live </Text>
-            </React.Fragment>}
-            titleStyle={{marginTop:30}}
-            subtitleStyle={{marginRight: 100, width: 300}}
-          />
-        </Appbar>
+      <NavigationContainer>
+        <PaperProvider theme={theme}>
+          <Appbar style={{elevation: 24, height:90}}>
+            <Appbar.Content
+              title=
+                {<React.Fragment>
+                  <Text> {this.state.title}</Text>
+                </React.Fragment>}
+              subtitle={<React.Fragment>
+                  <Text style={{color:'white', fontFamily:'System'}}> 🏈 Games</Text>
+                  <Text> 🔴 Live </Text>
+                  <Text>🌎All </Text>
+              </React.Fragment>}
+              titleStyle={{marginTop:30}}
+              subtitleStyle={{marginRight: 100, width: 300}}
+            />
+          </Appbar>
 
-          <SearchBar
-            placeholder='games, events, or teams'
-            containerStyle={styles.search}
-            onChangeText={this.updateSearch}
-            inputContainerStyle={styles.innerSearchBar}
-            searchIcon
-            placeholderTextColor={'black'}
-            value={search}
-          />
-          <Card style={styles.iconContainer}>
-            <Icon name='filter' size={40} color={'#ddd'}/>
-          </Card>
-  
-          <Sports sports={this.state.sports} />
-      </PaperProvider>
+            <SearchBar
+              placeholder='games, events, or teams'
+              containerStyle={styles.search}
+              onChangeText={this.updateSearch}
+              inputContainerStyle={styles.innerSearchBar}
+              searchIcon
+              placeholderTextColor={'black'}
+              value={search}
+            />
+            <Card style={styles.iconContainer}>
+              <Icon name='filter' size={40} color={'#ddd'}/>
+            </Card>
+    
+            <Sports sports={this.state.sports} />
+        </PaperProvider>
+      </NavigationContainer>
     );
   }
 }

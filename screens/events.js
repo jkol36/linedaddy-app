@@ -1,49 +1,39 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import { 
     StyleSheet, 
     SafeAreaView, 
     FlatList,
     TouchableOpacity,
     Dimensions,
-    View
+    View,
+    Text
    } from 'react-native'
 import { Card, Title } from 'react-native-paper';
 
 import { formatData } from '../helpers';
+import moment from 'moment';
 
-const events = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'NBA FINALS 2019',
-    uri: 'https://images.unsplash.com/photo-1499754162586-08f451261482?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Wimbledon 2019',
-    uri: 'https://images.unsplash.com/photo-1544298621-a28c00544483?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
-  },
 
-];
 
   
 
-const numColumns = 3;
-export default class Events extends React.Component {
+const numColumns = 1;
+export default class Events extends Component {
   constructor(props) {
     super(props);
   }
   renderItem({item, index}) {
-    const { uri, title } = item
+    const { home_team, away_team, venue, game_start, league } = item
     if(item.empty === true) {
       return <View style={[styles.itemInvisible, styles.item]} />
     }
     return (
       <TouchableOpacity>
         <Card style={styles.card}> 
-        <Card.Cover source={{ uri }} />
           <Card.Content>
-              <Title>{title}</Title>
+              <Title>{home_team.name} vs {away_team.name} ({league}) @ {venue.name}</Title>
+              <Text> starts: {moment(game_start).fromNow()} </Text>
           </Card.Content>
         </Card>
       </TouchableOpacity>
@@ -54,7 +44,7 @@ export default class Events extends React.Component {
   render() {
     return (
       <FlatList
-        data={formatData(events, numColumns)}
+        data={formatData(this.props.events, numColumns)}
         renderItem={this.renderItem}
         keyExtractor={item => item.id}
         numColumns={numColumns}

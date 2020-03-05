@@ -1,3 +1,5 @@
+
+  
 /**
  * Sample React Native App with Firebase
  * https://github.com/invertase/react-native-firebase
@@ -15,7 +17,9 @@ import {
   TextInput, 
   SafeAreaView, 
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  Button,
+  Dimensions
  } from 'react-native';
 import { 
   Appbar, 
@@ -58,7 +62,7 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       search: '',
-      title: 'Sports',
+      title: 'Events',
       categories: [{
         active: true,
         name: 'Events'
@@ -79,66 +83,101 @@ export default class App extends React.Component {
       name: '🌎All'
     }],
     sports: [],
+    events: [],
+    activeScreen: 'Sports',
     subTitle: 'Events'
-
-
 
     }
     this.updateSearch = this.updateSearch.bind(this);
+    this.filterEvents = this.filterEvents.bind(this);
+    this.filterSports = this.filterSports.bind(this);
   }
 
   componentDidMount() {
-    const sports = []
+    const sports = [];
+    const events = [];
     dbh.collection("sports").get().then(res => {
       res.forEach(doc => {
-        console.log(doc.data())
         sports.push(doc.data())
       })
       this.setState({sports})
     })
-  }
+    dbh.collection('top events').get().then(res => {
+      res.forEach(doc => {
+        events.push(doc.data())
+      })
+        this.setState({events})
+      })
+    
+    }
 
   updateSearch = search => {
     this.setState({ search });
   };
 
-  render() {
-    const { search, categories, subCategories } = this.state
-    return (
-      <NavigationContainer>
-        <PaperProvider theme={theme}>
-          <Appbar style={{elevation: 24, height:90}}>
-            <Appbar.Content
-              title=
-                {<React.Fragment>
-                  <Text> {this.state.title}</Text>
-                </React.Fragment>}
-              subtitle={<React.Fragment>
-                  <Text style={{color:'white', fontFamily:'System'}}> 🏈 Games</Text>
-                  <Text> 🔴 Live </Text>
-                  <Text>🌎All </Text>
-              </React.Fragment>}
-              titleStyle={{marginTop:30}}
-              subtitleStyle={{marginRight: 100, width: 300}}
-            />
-          </Appbar>
+  filterEvents = () => {
+    const regex = new RegExp(this.state.search, 'gi');
+    let results = []
+    this.state.events.forEach(item => {
+      if (item.name.match(regex)) {
+        results.push(item)
+      }
+      if(item.venue.name.match(regex)) {
+        results.push(item)
+      }
+      else if (this.state.search.length === 0) {
+        return this.state.events
+      }
 
-            <SearchBar
-              placeholder='games, events, or teams'
-              containerStyle={styles.search}
-              onChangeText={this.updateSearch}
-              inputContainerStyle={styles.innerSearchBar}
-              searchIcon
-              placeholderTextColor={'black'}
-              value={search}
-            />
-            <Card style={styles.iconContainer}>
-              <Icon name='filter' size={40} color={'#ddd'}/>
-            </Card>
+    })
+    return results.filter((item, i) => results.indexOf(item) === i) //remove duplicate items
+  }
+  filterSports = () => {
+    const regex = new RegExp(this.state.search, 'gi');
+    let results = []
+    if(this.state.sports.length > 0) {
+      this.state.sports.forEach(item => {
+        if(item.name !== undefined) {
+          if (item.name.match(regex)) {
+            results.push(item)
+          }
+        }
+    else if (this.state.search.length === 0) {
+      return this.state.sports
+    }});
+    return results.filter((item, i) => results.indexOf(item) === i); //remove duplicate items
+    }
+    else {
+      return this.state.sports
+    }
     
-            <Sports sports={this.state.sports} />
-        </PaperProvider>
-      </NavigationContainer>
+  }
+
+  render() {
+    const { search, categories, subCategories } = this.state;
+    return (
+          <PaperProvider theme={theme}>
+            <Appbar style={{ height:80}}>
+              <TouchableOpacity onPress={() => this.setState({activeScreen:'Sports'})}><Text style={this.state.activeScreen === 'Sports' ? styles.buttonActive: styles.buttonInactive}>Sports</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => this.setState({activeScreen:'Events'})}><Text style={this.state.activeScreen  === 'Events' ? styles.buttonActive: styles.buttonInactive}>Events</Text></TouchableOpacity>
+            </Appbar>
+
+              <SearchBar
+                placeholder='games, events, or teams'
+                containerStyle={styles.search}
+                onChangeText={this.updateSearch}
+                inputContainerStyle={styles.innerSearchBar}
+                searchIcon
+                placeholderTextColor={'black'}
+                value={search}
+              />
+              <Card style={styles.iconContainer}>
+              <TouchableOpacity>
+                <Icon name='filter' size={40} color={'#ddd'} style={styles.filter}/>
+              </TouchableOpacity>
+              </Card>
+              {this.state.activeScreen === 'Sports' ? <Sports sports={this.state.search.length > 0 ? this.filterSports(): this.state.sports}/>:<Events events={this.filterEvents()}/>}
+          </PaperProvider>
     );
   }
 }
@@ -154,6 +193,44 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10
 
+  },
+  filter: {
+    width: 51,
+    height: 38,
+    borderRadius: 5,
+    paddingLeft:10,
+    backgroundColor: "#ffffff",
+    shadowColor: "#c4c4c4",
+    shadowOffset: {
+      width: 1,
+      height: 2
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1
+  },
+  buttonActive: {
+    color:'white',
+    marginTop: 30,
+    width: 76,
+    marginBottom: 10,
+    marginRight:10,
+    height: 31,
+    fontSize: 26,
+    fontWeight: "600",
+    fontStyle: "normal",
+    letterSpacing: -0.52,
+  },
+  buttonInactive: {
+    width: 76,
+    height: 31,
+    fontSize: 26,
+    fontWeight: "600",
+    fontStyle: "normal",
+    letterSpacing: -0.52,
+    color: "rgba(255, 255, 255, 0.6)",
+    marginTop:30,
+    marginBottom:10,
+    marginRight:10
   },
   headerText: {
     color: 'white',

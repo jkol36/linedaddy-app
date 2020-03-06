@@ -26,7 +26,8 @@ import {
   DefaultTheme, 
   Provider as PaperProvider, Card } from 'react-native-paper';
 import { SearchBar } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Sports from './screens/sports';
 import Events from './screens/events';
 import GameView from './screens/gameview';
@@ -156,8 +157,8 @@ export default class App extends React.Component {
   render() {
     const { search, categories, subCategories } = this.state;
     return (
-          <PaperProvider theme={theme}>
-            <Appbar style={{ height:80}}>
+          <PaperProvider theme={theme} settings={{icon: props => <Icon {...props} />}}>
+            <Appbar style={{height:80}}>
               <TouchableOpacity onPress={() => this.setState({activeScreen:'Sports'})}><Text style={this.state.activeScreen === 'Sports' ? styles.buttonActive: styles.buttonInactive}>Sports</Text></TouchableOpacity>
               <TouchableOpacity onPress={() => this.setState({activeScreen:'Events'})}><Text style={this.state.activeScreen  === 'Events' ? styles.buttonActive: styles.buttonInactive}>Events</Text></TouchableOpacity>
             </Appbar>
@@ -173,10 +174,17 @@ export default class App extends React.Component {
               />
               <Card style={styles.iconContainer}>
               <TouchableOpacity>
-                <Icon name='filter' size={40} color={'#ddd'} style={styles.filter}/>
+                <FontAwesomeIcon name='filter' size={40} color={'#ddd'} style={styles.filter}/>
               </TouchableOpacity>
               </Card>
-              {this.state.activeScreen === 'Sports' ? <Sports sports={this.state.search.length > 0 ? this.filterSports(): this.state.sports}/>:<Events events={this.filterEvents()}/>}
+              <GameView />
+              <Appbar>
+                <Appbar.Action style={styles.action} icon='ios-home' />
+                <Appbar.Action style={styles.action} icon='ios-search'/>
+                <Appbar.Action style={styles.action} icon='ios-analytics'/>
+                <Appbar.Action style={styles.action} icon='ios-calendar'/>
+                <Appbar.Action icon='ios-menu'/>
+              </Appbar>
           </PaperProvider>
     );
   }
@@ -193,6 +201,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10
 
+  },
+  action: {
+    marginLeft:40,
+    marginRight:10,
   },
   filter: {
     width: 51,

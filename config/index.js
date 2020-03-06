@@ -2,6 +2,7 @@ import * as firebase from 'firebase';
 
 
 
+
 // Initialize Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCwjLM5My7SDBxp7_lHe58Zf04tXjFzQCU",
@@ -13,5 +14,6 @@ const firebaseConfig = {
     appId: "1:759218622721:web:be65cb385da523cfa90b00",
     measurementId: "G-4NGR6ZVRG2"
   };
-  
+
   firebase.initializeApp(firebaseConfig);
+

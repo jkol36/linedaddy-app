@@ -9,7 +9,7 @@ import {
     View
    } from 'react-native'
 import { Card, Title } from 'react-native-paper';
-
+import * as Amplitude from 'expo-analytics-amplitude';
 import { formatData } from '../helpers';
 
 
@@ -19,6 +19,10 @@ const numColumns = 3;
 export default class Sports extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    Amplitude.logEvent('user viewed the sports component')
   }
   renderItem({item, index}) {
     console.log('rendering item', item)

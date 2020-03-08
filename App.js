@@ -28,6 +28,7 @@ import {
 import { SearchBar } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Sports from './screens/sports';
 import Events from './screens/events';
 import GameView from './screens/gameview';
@@ -165,20 +166,30 @@ export default class App extends React.Component {
 
               <SearchBar
                 placeholder='games, events, or teams'
-                containerStyle={styles.search}
+                containerStyle={{
+                  backgroundColor:'#fff', 
+                  borderBottomColor:'#fff', 
+                  elevation:24
+                }}
                 onChangeText={this.updateSearch}
                 inputContainerStyle={styles.innerSearchBar}
-                searchIcon
+                searchIcon={<FontAwesomeIcon name='search' size={30}/>}
+                round
+                leftIconContainerStyle={{
+                  marginLeft:10,
+                }}
                 placeholderTextColor={'black'}
                 value={search}
               />
               <Card style={styles.iconContainer}>
               <TouchableOpacity>
-                <FontAwesomeIcon name='filter' size={40} color={'#ddd'} style={styles.filter}/>
+                <MaterialCommunityIcon name='filter-outline' size={35} style={styles.filter}/>
               </TouchableOpacity>
               </Card>
-              <GameView />
-              <Appbar>
+              <GameView  />
+              <Appbar style={{
+                marginTop:-30
+              }}>
                 <Appbar.Action style={styles.action} icon='ios-home' />
                 <Appbar.Action style={styles.action} icon='ios-search'/>
                 <Appbar.Action style={styles.action} icon='ios-analytics'/>
@@ -195,11 +206,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     borderBottomColor: '#ddd',
     marginLeft: 350,
-    marginTop: -55,
+    marginTop: -49,
+    height: 44,
+    paddingTop:5,
+    paddingBottom:10,
     backgroundColor: '#fff',
     width: 50,
-    paddingTop: 10,
-    paddingBottom: 10
 
   },
   action: {
@@ -207,11 +219,8 @@ const styles = StyleSheet.create({
     marginRight:10,
   },
   filter: {
-    width: 51,
-    height: 38,
-    borderRadius: 5,
-    paddingLeft:10,
-    backgroundColor: "#ffffff",
+    width: 30,
+    height: 30,
     shadowColor: "#c4c4c4",
     shadowOffset: {
       width: 1,
@@ -250,12 +259,19 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     fontFamily: 'System',
   },
-  search: {
-    width: '80%',
-    backgroundColor: 'white',
-  },
+
   innerSearchBar: {
-    backgroundColor: 'white'
+    width: '80%',
+    height: 38,
+    borderRadius: 5,
+    borderBottomColor: '#fff',
+    backgroundColor:'#fff',
+    shadowColor: "#c4c4c4",
+    shadowOffset: {
+      width: 1,
+      height: 2
+  },
+
   },
   subHeading: {
     marginTop: 75,
